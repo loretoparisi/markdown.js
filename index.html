@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+ <head> 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/json.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/bash.min.js"></script>
+ </head>
+  <body>
+    <textarea id="text-input" oninput="this.editor.update()" rows="10" cols="80" style="display:none;"> 
+    </textarea>
+    <div id="preview"></div>
+    <script src="js/markdown.js"></script>
+    <script>
+      function Editor(input, preview) {
+        this.update = function () {
+          preview.innerHTML = markdown.toHTML(input.value);
+          // syntax highlight
+          $('code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+        };
+        input.editor = this;
+        this.update();
+      }//Editor
+      
+      $(document).ready(function () {
+        // syntax highlight
+        hljs.configure({useBR: false});
+        $.ajax({
+            type: 'GET',
+            url: 'examples/tutorial.md',
+            contentType: "text/plain"
+        })
+        .done(function (data) {
+            $('#text-input').text(data);
+            // markdown editor
+            new Editor(document.getElementById("text-input"), document.getElementById("preview"));
+        })
+        .fail(function (error) {
+            console.error(error);
+        });
+      });
+    </script>
+  </body>
+</html>
