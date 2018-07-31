@@ -13,7 +13,7 @@ John Gruber's Markdown Syntax Documentation [here](https://daringfireball.net/pr
 ## How to Build
 To build the example you can use `yarn` or `npm install`.
 
-## How To Rum
+## How To Run
 To run example you can use `yarn watch` or `npm run watch`.
 
 ## Example
