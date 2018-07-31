@@ -16,5 +16,10 @@ To build the example you can use `yarn` or `npm install`.
 ## How To Rum
 To run example you can use `yarn watch` or `npm run watch`.
 
+## Example
+The example shows a simple markdown page with markdown, some code and a json visualization output.
+![screencapture-localhost-1234-2018-07-31-22_55_53](https://user-images.githubusercontent.com/163333/43486762-ecde010e-9514-11e8-85af-66c28c2ba324.png)
+
+
 ## Disclaimer
 Both Markdown-js and PrettyJSON have been modified to be modularized with babel.
