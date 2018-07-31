@@ -1,47 +1,86 @@
 <!DOCTYPE html>
 <html>
  <head> 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/json.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/bash.min.js"></script>
- </head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/pretty-json.min.css" />
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/json.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/bash.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" ></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js" ></script>
+    <script src="js/pretty-json.js"></script>
+  </head>
   <body>
     <textarea id="text-input" oninput="this.editor.update()" rows="10" cols="80" style="display:none;"> 
     </textarea>
     <div id="preview"></div>
     <script src="js/markdown.js"></script>
     <script>
-      function Editor(input, preview) {
-        this.update = function () {
-          preview.innerHTML = markdown.toHTML(input.value);
-          // syntax highlight
-          $('code').each(function(i, block) {
-            hljs.highlightBlock(block);
-        });
-        };
-        input.editor = this;
-        this.update();
-      }//Editor
+      function highlight(container) {
+            $( container.getElementsByTagName('code') ).each(function(i, block) {
+                hljs.highlightBlock(block);
+            });
+            // syntax highlight
+            $( container.getElementsByTagName('code') ).each(function(i, block) {
+                var codeClass=$(block).attr('class');
+                if(codeClass && codeClass.indexOf('json')>-1) {
+                    setTimeout(function() {
+                        var codeBlock= JSON.parse( $(block).text() );
+                        var el = $('<div>');
+                        $(block).empty().append(el);
+                        var node = new PrettyJSON.view.Node({
+                            el: el,
+                            data: codeBlock
+                        });
+                        node.expandAll();
+                    }, 500);
+                } else {
+                    hljs.highlightBlock(block);
+                }
+            });
+        }//highlight
+        function Editor(input, preview) {
+            this.update = function () {
+                preview.innerHTML = markdown.toHTML(input.value);
+                highlight(preview);
+            };
+            input.editor = this;
+            this.update();
+        }//Editor
+        function loadMarkdow(mardownPage,textareId,previewId) {
+            return new Promise(function(resolve,reject) {
+                    $.ajax({
+                    type: 'GET',
+                    url: mardownPage,
+                    contentType: "text/plain"
+                })
+                .done(function (data) {
+                    $('#'+textareId).text(data);
+                    // markdown editor
+                    new Editor(document.getElementById(textareId), document.getElementById(previewId));
+                })
+                .fail(function (error) {
+                    console.error(error);
+                });
+            });
+        }
       
       $(document).ready(function () {
         // syntax highlight
         hljs.configure({useBR: false});
-        $.ajax({
-            type: 'GET',
-            url: 'examples/tutorial.md',
-            contentType: "text/plain"
+        Promise.all([
+            loadMarkdow('tutorial.md','text-input','preview')
+        ])
+        .then(done => {
+                
         })
-        .done(function (data) {
-            $('#text-input').text(data);
-            // markdown editor
-            new Editor(document.getElementById("text-input"), document.getElementById("preview"));
-        })
-        .fail(function (error) {
-            console.error(error);
-        });
       });
     </script>
   </body>
