@@ -4,6 +4,25 @@ This page contains additional examples of how to apply various parts of the spec
 ## Basic request:
 __GET__ /articles?include=author HTTP/1.1
 
+## cURL example
+
+    curl 'localhost:3000/articles?include=author'
+
+## JavaScript example
+
+    $.ajax({
+        type: 'GET',
+        url: 'localhost:3000/articles?include=author',
+        contentType: "application/json"
+    })
+    .done(function (data) {
+        console.log( JSON.stringify(data) );
+    })
+    .fail(function (error) {
+        console.error(error);
+    });
+
+### Response Body
     {
         "data": [{
             "type": "articles",
@@ -35,6 +54,25 @@ __GET__ /articles?include=author HTTP/1.1
 ## Request with fields parameter:
 __GET__ /articles?include=author&fields[articles]=title,body,author&fields[people]=name 
 
+## cURL example
+
+    curl 'localhost:3000/articles?include=author&fields[articles]=title,body,author&fields[people]=name'
+
+## JavaScript example
+
+    $.ajax({
+        type: 'GET',
+        url: 'localhost:3000/articles?include=author&fields[articles]=title,body,author&fields[people]=name',
+        contentType: "application/json"
+    })
+    .done(function (data) {
+        console.log( JSON.stringify(data) );
+    })
+    .fail(function (error) {
+        console.error(error);
+    });
+
+### Response Body
     {
     "data": [{
         "type": "articles",
